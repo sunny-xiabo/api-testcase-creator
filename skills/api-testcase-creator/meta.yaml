@@ -1,0 +1,32 @@
+name: api-testcase-creator
+description: "从 OpenAPI/Swagger 接口文档自动生成测试用例和 pytest 自动化代码，支持评审优化与 XTestRunner 报告"
+version: "1.0.0"
+
+platforms:
+  claude:
+    path: ".claude/commands/api-testcase-creator.md"
+    frontmatter:
+      description: "{{description}}"
+    body_from: prompt.md
+
+  cursor:
+    path: ".cursor/skills/api-testcase-creator/skill.md"
+    frontmatter:
+      name: "{{name}}"
+      description: "{{description}}"
+      triggers:
+        - "/api-testcase-creator"
+    body_from: prompt.md
+
+  agents:
+    path: ".agents/skills/source-command-api-testcase-creator/SKILL.md"
+    frontmatter:
+      name: "source-command-{{name}}"
+      description: "从 OpenAPI/Swagger 接口文档自动生成测试用例和 pytest 自动化代码"
+    body_from: prompt.md
+    prepend: |
+      # source-command-api-testcase-creator
+
+      Use this skill when the user asks to run the migrated source command `api-testcase-creator`.
+
+      ## Command Template

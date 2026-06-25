@@ -1,0 +1,159 @@
+{
+  "_comment": "API 接口测试用例表列配置",
+  "_usage": "skill 文件读取此配置生成用例表，用户可自定义列",
+
+  "columns": [
+    {
+      "field": "id",
+      "header": "用例ID",
+      "required": true,
+      "editable": false,
+      "description": "用例编号，格式 TC-XXX",
+      "width": "auto"
+    },
+    {
+      "field": "endpoint",
+      "header": "所属接口",
+      "required": true,
+      "editable": false,
+      "description": "接口标识，如 POST /api/orders",
+      "width": "auto"
+    },
+    {
+      "field": "test_point",
+      "header": "测试点",
+      "required": true,
+      "editable": true,
+      "description": "测试点描述",
+      "width": "auto"
+    },
+    {
+      "field": "request",
+      "header": "请求参数",
+      "required": true,
+      "editable": true,
+      "description": "请求方法、路径、Body、Query 参数",
+      "width": "auto"
+    },
+    {
+      "field": "precondition",
+      "header": "前置条件",
+      "required": true,
+      "editable": true,
+      "description": "环境/数据要求，如已登录、已创建订单",
+      "width": "auto"
+    },
+    {
+      "field": "expected",
+      "header": "预期结果",
+      "required": true,
+      "editable": true,
+      "description": "预期状态码、响应内容、断言",
+      "width": "auto"
+    },
+    {
+      "field": "checkpoint",
+      "header": "关联检查点",
+      "required": true,
+      "editable": true,
+      "description": "检查点编号，如 API-001",
+      "width": "auto"
+    },
+    {
+      "field": "type",
+      "header": "场景类型",
+      "required": true,
+      "editable": false,
+      "description": "正向/异常/边界/并发",
+      "width": "auto",
+      "enum": ["正向", "异常", "边界", "并发"]
+    },
+    {
+      "field": "priority",
+      "header": "优先级",
+      "required": true,
+      "editable": false,
+      "description": "P0/P1/P2/P3",
+      "width": "auto",
+      "enum": ["P0", "P1", "P2", "P3"]
+    }
+  ],
+
+  "optional_columns": [
+    {
+      "field": "review_point",
+      "header": "关联评审点",
+      "required": false,
+      "editable": true,
+      "description": "评审点编号，如 PARAM-01"
+    },
+    {
+      "field": "executor",
+      "header": "执行人",
+      "required": false,
+      "editable": true,
+      "description": "用例执行负责人"
+    },
+    {
+      "field": "status",
+      "header": "执行状态",
+      "required": false,
+      "editable": true,
+      "description": "未执行/通过/失败/阻塞",
+      "enum": ["未执行", "通过", "失败", "阻塞"]
+    },
+    {
+      "field": "remark",
+      "header": "备注",
+      "required": false,
+      "editable": true,
+      "description": "补充说明"
+    },
+    {
+      "field": "automation",
+      "header": "自动化标记",
+      "required": false,
+      "editable": true,
+      "description": "是否已自动化：是/否/待评估",
+      "enum": ["是", "否", "待评估"]
+    },
+    {
+      "field": "module",
+      "header": "所属模块",
+      "required": false,
+      "editable": true,
+      "description": "功能模块细分"
+    }
+  ],
+
+  "settings": {
+    "id_prefix": "TC",
+    "id_digits": 3,
+    "default_priority_rule": "P0=核心正向+鉴权异常，P1=参数校验+边界值，P2=幂等并发，P3=性能/体验",
+    "scene_types": ["正向", "异常", "边界", "并发"],
+    "priority_levels": ["P0", "P1", "P2", "P3"],
+    "priority_colors": {
+      "P0": "red",
+      "P1": "orange",
+      "P2": "blue",
+      "P3": "gray"
+    }
+  },
+
+  "metadata_section": {
+    "enabled": true,
+    "fields": [
+      {"field": "project", "label": "项目名称"},
+      {"field": "module", "label": "测试接口"},
+      {"field": "source", "label": "接口文档来源"},
+      {"field": "date", "label": "生成日期"},
+      {"field": "checkpoints", "label": "关联检查点"}
+    ]
+  },
+
+  "statistics_section": {
+    "enabled": true,
+    "group_by": "type",
+    "show_percentage": true
+  }
+}

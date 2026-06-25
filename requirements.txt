@@ -1,0 +1,5 @@
+# api-testcase-creator 项目依赖
+# 用于构建和运行框架本身
+
+PyYAML>=6.0
+json-repair>=0.30.0

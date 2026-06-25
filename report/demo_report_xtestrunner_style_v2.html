@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>订单模块 - API 测试报告</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* XTestRunner 样式 */
+        :root {
+            --x-gray-50: #fafafa;
+            --x-gray-100: #f5f9fc;
+            --x-gray-200: #e7eaf0;
+            --x-gray-300: #cfd6df;
+            --x-gray-400: #abb6c5;
+            --x-gray-500: #8898a9;
+            --x-gray-600: #6b7b93;
+            --x-gray-700: #525f7f;
+            --x-gray-800: #2d3748;
+            --x-gray-900: #16192c;
+            --x-blue-500: #0099ff;
+            --x-green-500: #00cc88;
+            --x-orange-500: #ff8c00;
+            --x-red-500: #ff3366;
+            --x-purple-500: #8957ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--x-gray-100);
+            color: var(--x-gray-800);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid var(--x-gray-200);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--x-gray-900);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .navbar-title {
+            font-size: 16px;
+            color: var(--x-gray-600);
+        }
+
+        /* 容器 */
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: 1px solid var(--x-gray-200);
+        }
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--x-gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--x-gray-50);
+            border-radius: 8px 8px 0 0;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .card-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--x-gray-200);
+            background: var(--x-gray-50);
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--x-gray-200);
+        }
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .stat-title {
+            font-size: 14px;
+            color: var(--x-gray-600);
+            font-weight: 500;
+        }
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .stat-rate {
+            font-size: 14px;
+            color: var(--x-gray-600);
+            margin-bottom: 12px;
+        }
+
+        /* 进度条 */
+        .progress {
+            height: 8px;
+            background: var(--x-gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* 颜色 */
+        .bg-success { background-color: var(--x-green-500); }
+        .bg-warning { background-color: var(--x-orange-500); }
+        .bg-danger { background-color: var(--x-red-500); }
+        .bg-secondary { background-color: var(--x-gray-500); }
+        .text-success { color: var(--x-green-500); }
+        .text-warning { color: var(--x-orange-500); }
+        .text-danger { color: var(--x-red-500); }
+        .text-secondary { color: var(--x-gray-500); }
+
+        /* 表格 */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th {
+            background: var(--x-gray-50);
+            font-weight: 600;
+            color: var(--x-gray-700);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--x-gray-200);
+        }
+        .table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--x-gray-200);
+            font-size: 14px;
+        }
+        .table tr:hover {
+            background: var(--x-gray-50);
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        /* 徽章 */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-secondary { background: var(--x-gray-200); color: var(--x-gray-700); }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+
+        /* 按钮 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-sm { padding: 4px 8px; font-size: 12px; }
+        .btn-dark { background: var(--x-gray-800); color: white; }
+        .btn-success { background: var(--x-green-500); color: white; }
+        .btn-warning { background: var(--x-orange-500); color: white; }
+        .btn-danger { background: var(--x-red-500); color: white; }
+        .btn-secondary { background: var(--x-gray-500); color: white; }
+        .btn-info { background: var(--x-blue-500); color: white; }
+        .btn-outline-info { background: transparent; border: 1px solid var(--x-blue-500); color: var(--x-blue-500); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* 优先级颜色 */
+        .priority-P0 { color: var(--x-red-500); font-weight: 700; }
+        .priority-P1 { color: var(--x-orange-500); font-weight: 600; }
+        .priority-P2 { color: var(--x-blue-500); font-weight: 500; }
+        .priority-P3 { color: var(--x-gray-500); }
+
+        /* 图表容器 */
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 隐藏行 */
+        .hiddenRow {
+            display: none;
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            color: var(--x-gray-500);
+            font-size: 12px;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid var(--x-gray-200);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .navbar { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span style="font-size: 24px;">📊</span>
+            <span>API 测试报告</span>
+        </div>
+        <div class="navbar-title">订单模块 - API 测试报告</div>
+    </nav>
+
+    <div class="container-fluid">
+        <!-- 概述卡片 -->
+        <div class="stats-grid">
+            <!-- 概述信息 -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">概述</div>
+                </div>
+                <div style="font-size: 14px; line-height: 2;">
+                    <div>👨‍🔧 测试人员: <span style="color: var(--x-gray-600);">张三</span></div>
+                    <div>🕒 开始时间: <span style="color: var(--x-gray-600);">2026-06-25 09:23:16</span></div>
+                    <div>🕘 结束时间: <span style="color: var(--x-gray-600);">2026-06-25 09:24:01</span></div>
+                    <div>⌛ 运行时长: <span style="color: var(--x-gray-600);">45.00s</span></div>
+                    <div>ℹ️ 描述: <span style="color: var(--x-gray-600);">订单模块接口自动化测试报告</span></div>
+                </div>
+            </div>
+
+            <!-- 通过 -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">通过</div>
+                    <div class="stat-icon" style="background: #d1fae5; color: var(--x-green-500);">P</div>
+                </div>
+                <div class="stat-number text-success">12</div>
+                <div class="stat-rate">
+                    <span class="badge badge-success">80.0%</span>
+                    <span style="margin-left: 8px; font-size: 12px; color: var(--x-gray-500);">通过率</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-success" style="width: 80.0%"></div>
+                </div>
+            </div>
+
+            <!-- 失败 -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">失败</div>
+                    <div class="stat-icon" style="background: #fef3c7; color: var(--x-orange-500);">F</div>
+                </div>
+                <div class="stat-number text-warning">2</div>
+                <div class="stat-rate">
+                    <span class="badge badge-warning">13.3%</span>
+                    <span style="margin-left: 8px; font-size: 12px; color: var(--x-gray-500);">失败率</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" style="width: 13.3%"></div>
+                </div>
+            </div>
+
+            <!-- 错误 -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">错误</div>
+                    <div class="stat-icon" style="background: #fee2e2; color: var(--x-red-500);">E</div>
+                </div>
+                <div class="stat-number text-danger">0</div>
+                <div class="stat-rate">
+                    <span class="badge badge-danger">0.0%</span>
+                    <span style="margin-left: 8px; font-size: 12px; color: var(--x-gray-500);">错误率</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-danger" style="width: 0.0%"></div>
+                </div>
+            </div>
+
+            <!-- 跳过 -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">跳过</div>
+                    <div class="stat-icon" style="background: var(--x-gray-200); color: var(--x-gray-500);">S</div>
+                </div>
+                <div class="stat-number text-secondary">1</div>
+                <div class="stat-rate">
+                    <span class="badge badge-secondary">6.7%</span>
+                    <span style="margin-left: 8px; font-size: 12px; color: var(--x-gray-500);">跳过率</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-secondary" style="width: 6.7%"></div>
+                </div>
+            </div>
+
+            <!-- 统计图表 -->
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">统计数据</div>
+                </div>
+                <div class="chart-container">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">
+                        <div style="display: flex; align-items: flex-end; gap: 20px; height: 200px; padding: 0 20px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                <div style="width: 60px; background: linear-gradient(to top, var(--x-green-500), #34d399); border-radius: 4px 4px 0 0; height: 120px;"></div>
+                                <div style="font-size: 12px; color: var(--x-gray-600);">通过</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                <div style="width: 60px; background: linear-gradient(to top, var(--x-orange-500), #fbbf24); border-radius: 4px 4px 0 0; height: 20px;"></div>
+                                <div style="font-size: 12px; color: var(--x-gray-600);">失败</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                <div style="width: 60px; background: linear-gradient(to top, var(--x-red-500), #f87171); border-radius: 4px 4px 0 0; height: 20px;"></div>
+                                <div style="font-size: 12px; color: var(--x-gray-600);">错误</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                <div style="width: 60px; background: linear-gradient(to top, var(--x-gray-500), #9ca3af); border-radius: 4px 4px 0 0; height: 20px;"></div>
+                                <div style="font-size: 12px; color: var(--x-gray-600);">跳过</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果表格 -->
+        <div class="card">
+            <div class="card-header">
+                <span style="font-weight: 600;">结果</span>
+                <span>
+                    <a href="javascript:showAll()" class="btn btn-dark btn-sm">摘要</a>
+                    <a href="javascript:showStatus('passed')" class="btn btn-success btn-sm">通过</a>
+                    <a href="javascript:showStatus('failed')" class="btn btn-warning btn-sm">失败</a>
+                    <a href="javascript:showStatus('error')" class="btn btn-danger btn-sm">错误</a>
+                    <a href="javascript:showStatus('skipped')" class="btn btn-secondary btn-sm">跳过</a>
+                </span>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>测试用例</th>
+                            <th>描述</th>
+                            <th>接口</th>
+                            <th>场景类型</th>
+                            <th>优先级</th>
+                            <th>时长</th>
+                            <th>结果</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr class="test-row" id="t0">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-001</span>
+                </td>
+                <td>正向创建订单</td>
+                <td>POST /api/orders</td>
+                <td>正向</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.234s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t1">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-002</span>
+                </td>
+                <td>正向查询订单列表</td>
+                <td>GET /api/orders</td>
+                <td>正向</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.156s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t2">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-003</span>
+                </td>
+                <td>正向查询订单详情</td>
+                <td>GET /api/orders/{id}</td>
+                <td>正向</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.189s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t3">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-004</span>
+                </td>
+                <td>正向更新订单状态</td>
+                <td>PUT /api/orders/{id}</td>
+                <td>正向</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.267s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t4">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-005</span>
+                </td>
+                <td>缺少必填参数 product_id</td>
+                <td>POST /api/orders</td>
+                <td>异常</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.123s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t5">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-006</span>
+                </td>
+                <td>缺少必填参数 quantity</td>
+                <td>POST /api/orders</td>
+                <td>异常</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.134s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t6">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-007</span>
+                </td>
+                <td>参数类型错误 quantity</td>
+                <td>POST /api/orders</td>
+                <td>异常</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.145s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t7">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-008</span>
+                </td>
+                <td>无 Token 访问</td>
+                <td>POST /api/orders</td>
+                <td>异常</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.098s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t8">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-009</span>
+                </td>
+                <td>伪造 Token 访问</td>
+                <td>POST /api/orders</td>
+                <td>异常</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.112s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t9">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-010</span>
+                </td>
+                <td>quantity 边界值 minimum=1</td>
+                <td>POST /api/orders</td>
+                <td>边界</td>
+                <td><span class="priority-P1">P1</span></td>
+                <td>0.167s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t10">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-011</span>
+                </td>
+                <td>quantity 边界值 below_min=0</td>
+                <td>POST /api/orders</td>
+                <td>边界</td>
+                <td><span class="priority-P1">P1</span></td>
+                <td>0.178s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t11">
+                <td>
+                    <span class="badge badge-success" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">P</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-012</span>
+                </td>
+                <td>quantity 边界值 maximum=999</td>
+                <td>POST /api/orders</td>
+                <td>边界</td>
+                <td><span class="priority-P1">P1</span></td>
+                <td>0.189s</td>
+                <td><span class="badge badge-success">通过</span></td>
+                <td>
+                    
+                </td>
+            </tr>
+            
+            <tr class="test-row" id="t12">
+                <td>
+                    <span class="badge badge-warning" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">F</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-013</span>
+                </td>
+                <td>重复提交订单</td>
+                <td>POST /api/orders</td>
+                <td>异常</td>
+                <td><span class="priority-P0">P0</span></td>
+                <td>0.345s</td>
+                <td><span class="badge badge-warning">失败</span></td>
+                <td>
+                    <a href='javascript:showDetail("detail_12")' class='btn btn-sm btn-outline-info'>查看</a>
+                </td>
+            </tr>
+            
+                <tr id="detail_12" class="hiddenRow">
+                    <td colspan="8">
+                        <div style="padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                            <pre style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">AssertionError: 预期状态码 200，实际返回 400
+Response: {"error": "order already exists"}</pre>
+                        </div>
+                    </td>
+                </tr>
+            <tr class="test-row" id="t13">
+                <td>
+                    <span class="badge badge-warning" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">F</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-014</span>
+                </td>
+                <td>并发修改订单状态</td>
+                <td>PUT /api/orders/{id}</td>
+                <td>并发</td>
+                <td><span class="priority-P1">P1</span></td>
+                <td>0.567s</td>
+                <td><span class="badge badge-warning">失败</span></td>
+                <td>
+                    <a href='javascript:showDetail("detail_13")' class='btn btn-sm btn-outline-info'>查看</a>
+                </td>
+            </tr>
+            
+                <tr id="detail_13" class="hiddenRow">
+                    <td colspan="8">
+                        <div style="padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                            <pre style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">AssertionError: 预期状态码 200，实际返回 409
+Response: {"error": "conflict"}</pre>
+                        </div>
+                    </td>
+                </tr>
+            <tr class="test-row" id="t14">
+                <td>
+                    <span class="badge badge-secondary" style="width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;">S</span>
+                    <span style="margin-left: 8px; font-weight: 600;">TC-015</span>
+                </td>
+                <td>性能测试-大量数据</td>
+                <td>GET /api/orders</td>
+                <td>性能</td>
+                <td><span class="priority-P3">P3</span></td>
+                <td>0.000s</td>
+                <td><span class="badge badge-secondary">跳过</span></td>
+                <td>
+                    <a href='javascript:showDetail("detail_14")' class='btn btn-sm btn-outline-info'>查看</a>
+                </td>
+            </tr>
+            
+                <tr id="detail_14" class="hiddenRow">
+                    <td colspan="8">
+                        <div style="padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                            <pre style="margin: 0; white-space: pre-wrap; word-wrap: break-word;">跳过：需要性能测试环境</pre>
+                        </div>
+                    </td>
+                </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <span style="color: var(--x-gray-600); font-size: 14px;">
+                    总数:
+                    <span class="badge" style="background: var(--x-gray-800); color: white;">15</span>
+                    =
+                    <span class="badge badge-success">12</span>
+                    +
+                    <span class="badge badge-warning">2</span>
+                    +
+                    <span class="badge badge-danger">0</span>
+                    +
+                    <span class="badge badge-secondary">1</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            由 api-testcase-creator 自动生成 | 内置 HTML 报告生成器 (XTestRunner 样式)
+        </div>
+    </div>
+
+    <script>
+        // 显示/隐藏详情
+        function showDetail(id) {
+            var el = document.getElementById(id);
+            if (el.classList.contains('hiddenRow')) {
+                el.classList.remove('hiddenRow');
+            } else {
+                el.classList.add('hiddenRow');
+            }
+        }
+
+        // 按状态筛选
+        function showStatus(status) {
+            var rows = document.querySelectorAll('.test-row');
+            rows.forEach(function(row) {
+                var badge = row.querySelector('.badge');
+                if (badge) {
+                    var rowStatus = badge.textContent.trim();
+                    var statusMap = {'通过': 'passed', '失败': 'failed', '错误': 'error', '跳过': 'skipped'};
+                    if (statusMap[rowStatus] === status) {
+                        row.style.display = '';
+                        // 显示对应的详情行
+                        var detailId = row.id.replace('t', 'detail_');
+                        var detailRow = document.getElementById(detailId);
+                        if (detailRow) {
+                            detailRow.style.display = '';
+                        }
+                    } else {
+                        row.style.display = 'none';
+                        // 隐藏对应的详情行
+                        var detailId = row.id.replace('t', 'detail_');
+                        var detailRow = document.getElementById(detailId);
+                        if (detailRow) {
+                            detailRow.style.display = 'none';
+                        }
+                    }
+                }
+            });
+        }
+
+        // 显示全部
+        function showAll() {
+            var rows = document.querySelectorAll('.test-row');
+            rows.forEach(function(row) {
+                row.style.display = '';
+            });
+            var detailRows = document.querySelectorAll('[id^="detail_"]');
+            detailRows.forEach(function(row) {
+                row.style.display = '';
+            });
+        }
+    </script>
+</body>
+</html>

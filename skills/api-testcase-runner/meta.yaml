@@ -1,0 +1,32 @@
+name: api-testcase-runner
+description: "运行 API 测试用例并生成报告，支持冒烟/完整/干跑模式"
+version: "1.0.0"
+
+platforms:
+  claude:
+    path: ".claude/commands/api-testcase-runner.md"
+    frontmatter:
+      description: "{{description}}"
+    body_from: prompt.md
+
+  cursor:
+    path: ".cursor/skills/api-testcase-runner/skill.md"
+    frontmatter:
+      name: "{{name}}"
+      description: "{{description}}"
+      triggers:
+        - "/api-testcase-runner"
+    body_from: prompt.md
+
+  agents:
+    path: ".agents/skills/source-command-api-testcase-runner/SKILL.md"
+    frontmatter:
+      name: "source-command-{{name}}"
+      description: "运行 API 测试用例并生成报告"
+    body_from: prompt.md
+    prepend: |
+      # source-command-api-testcase-runner
+
+      Use this skill when the user asks to run the migrated source command `api-testcase-runner`.
+
+      ## Command Template

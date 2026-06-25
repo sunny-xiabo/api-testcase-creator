@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local editor / agent settings
+.vscode/
+.idea/
+.claude/
+
+# OS files
+.DS_Store
+
+# Runtime outputs from deployed projects
+.api-testcase-assets/history/
+
+# Temporary files
+*.tmp
+*.log
+*.bak

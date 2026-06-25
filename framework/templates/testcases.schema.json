@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "api-testcase-creator testcases",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "id",
+      "endpoint",
+      "test_point",
+      "request",
+      "precondition",
+      "expected",
+      "checkpoint",
+      "scene_type",
+      "priority"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^TC-[0-9]+$"
+      },
+      "endpoint": {
+        "type": "string",
+        "minLength": 1
+      },
+      "test_point": {
+        "type": "string",
+        "minLength": 1
+      },
+      "request": {
+        "type": "object",
+        "required": ["method", "path"],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path_params": {
+            "type": "object"
+          },
+          "query_params": {
+            "type": "object"
+          },
+          "headers": {
+            "type": "object"
+          },
+          "body": {}
+        },
+        "additionalProperties": true
+      },
+      "precondition": {
+        "type": "string"
+      },
+      "expected": {
+        "type": "object",
+        "required": ["status_code"],
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "checkpoint": {
+        "type": "string"
+      },
+      "scene_type": {
+        "type": "string",
+        "enum": ["正向", "异常", "边界", "并发", "业务", "安全", "性能"]
+      },
+      "priority": {
+        "type": "string",
+        "enum": ["P0", "P1", "P2", "P3"]
+      },
+      "review_point": {
+        "type": "string"
+      },
+      "module": {
+        "type": "string"
+      },
+      "remark": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": true
+  }
+}

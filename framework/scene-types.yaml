@@ -1,0 +1,19 @@
+# 场景类型定义
+# 用例表中的「场景类型」列使用这些值
+
+scene_types:
+  - code: P
+    name: "正向"
+    description: "正常流程，预期成功路径"
+
+  - code: N
+    name: "异常"
+    description: "异常/错误流程，预期失败或报错"
+
+  - code: B
+    name: "边界"
+    description: "边界值、临界条件"
+
+  - code: E
+    name: "并发"
+    description: "并发场景、多用户同时操作"

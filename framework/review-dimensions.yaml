@@ -1,0 +1,34 @@
+# API 测试评审维度定义
+
+dimensions:
+  - code: PARAM
+    name: "参数校验"
+    description: "参数测试覆盖是否完整：必填缺失、类型错误、边界值、枚举值"
+
+  - code: AUTH
+    name: "鉴权测试"
+    description: "认证和权限测试是否充分：无Token、过期Token、伪造Token、越权"
+
+  - code: BIZ
+    name: "业务场景"
+    description: "业务逻辑测试是否合理：正向流程、业务规则约束、状态流转"
+
+  - code: DATA
+    name: "数据校验"
+    description: "响应数据校验是否到位：状态码、JSON结构、字段值、数据类型"
+
+  - code: CHAIN
+    name: "流程覆盖"
+    description: "跨接口调用链是否覆盖：上下游依赖、数据传递、异常链路"
+
+  - code: PERF
+    name: "性能测试"
+    description: "性能测试点是否考虑：响应时间、大数据量、超时处理"
+
+  - code: SEC
+    name: "安全测试"
+    description: "安全测试点是否覆盖：注入攻击、敏感数据暴露、越权访问"
+
+  - code: IDEM
+    name: "幂等并发"
+    description: "幂等性和并发场景是否考虑：重复请求、并发操作、数据一致性"
