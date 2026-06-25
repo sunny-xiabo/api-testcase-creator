@@ -1,21 +1,147 @@
-# api-testcase-creator
+# API TestCase Creator
 
-LLM 驱动的 API 测试用例生成工具。它可以从 OpenAPI / Swagger / Postman 接口文档生成测试用例表、pytest 自动化代码、Postman Collection，并提供轻量多角色评审和 XTestRunner 样式 HTML 报告。
+> LLM 驱动的 API 测试设计助手。
+>
+> 从 OpenAPI / Swagger / Postman 自动生成测试用例、pytest 自动化代码和 Postman Collection，并通过多 Reviewer 风险评审机制补充业务场景、权限场景、流程场景和幂等场景。
 
-这个项目不是测试平台，而是一个可部署到目标项目中的 Skill 工具集：程序负责稳定解析和代码生成，LLM 负责业务场景补充、风险评审和用例优化。
+---
+
+## 为什么需要它？
+
+传统 API 测试设计通常存在两个问题。
+
+### 方式一：纯人工设计
+
+```text
+阅读接口文档
+    ↓
+分析参数
+    ↓
+编写测试用例
+    ↓
+评审补充
+```
+
+问题：
+
+- 耗时长
+- 容易遗漏边界场景
+- 测试经验难沉淀
+- 不同测试人员质量差异大
+
+### 方式二：纯 LLM 生成
+
+```text
+OpenAPI
+    ↓
+Prompt
+    ↓
+LLM
+    ↓
+测试用例
+```
+
+问题：
+
+- 输出不稳定
+- 容易出现幻觉
+- 缺少项目上下文
+- 用例质量难以保证
+
+## API TestCase Creator 的思路
+
+程序负责确定性部分。
+
+LLM 负责测试专家思考过程。
+
+```text
+                OpenAPI / Swagger / Postman
+                              │
+                              ▼
+                    接口解析与标准化
+                              │
+                              ▼
+                   程序生成基础测试集
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+         参数场景        边界场景        鉴权场景
+                              │
+                              ▼
+                  多 Reviewer 风险评审
+                              │
+      ┌───────────┬───────────┬───────────┬───────────┐
+      ▼           ▼           ▼           ▼           ▼
+   参数专家    权限专家    业务专家    数据专家   安全幂等专家
+                              │
+                              ▼
+                    主审汇总与去重
+                              │
+                              ▼
+                     风险场景补充
+                              │
+                              ▼
+                     JSON 校验修复
+                              │
+                              ▼
+               pytest / Postman / HTML Report
+```
+
+## 核心理念
+
+### Rule-based First
+
+基础测试场景由程序生成：
+
+- 正向用例
+- 必填缺失
+- 类型错误
+- 边界值
+- 枚举非法值
+- 鉴权异常
+
+避免把确定性问题交给 LLM。
+
+### LLM Review Driven
+
+LLM 不负责生成所有用例。
+
+LLM 负责：
+
+- 业务规则分析
+- 风险识别
+- 场景补洞
+- 用例评审
+
+这更接近资深测试工程师的工作方式。
+
+### Knowledge Driven
+
+支持项目级测试知识沉淀：
+
+```text
+.api-testcase-assets/
+├── api-checkpoints.md
+├── api-review-dimensions.md
+├── scene-types.yaml
+└── review-dimensions.yaml
+```
+
+项目经验可以持续积累和复用。
 
 ## 核心能力
 
 | 能力 | 说明 |
 |------|------|
-| 接口文档解析 | 支持 OpenAPI 3.0、Swagger 2.0、Postman Collection v2.x |
-| 基础用例生成 | 自动生成正向、必填缺失、类型错误、边界值、枚举、鉴权异常用例 |
-| LLM 业务补充 | 基于接口语义和检查点库补充业务流程、反向规则、幂等并发场景 |
-| 多角色评审 | 参数边界、鉴权权限、业务流程、数据断言、安全幂等 reviewer 独立评审后汇总 |
-| JSON 修复校验 | 使用 `json-repair` 修复 LLM 输出，并用 schema 校验结构化用例 |
-| pytest 代码生成 | 生成可运行的测试文件、`conftest.py`、`api_client.py`、`config.yaml` |
-| 测试运行报告 | 支持冒烟、完整、干跑模式，生成 Markdown 和零依赖 HTML 报告 |
-| 多平台分发 | 构建 Claude Code、Cursor、Codex Agents 三类 Skill 文件 |
+| OpenAPI / Swagger / Postman 解析 | 自动识别格式并统一建模 |
+| 基础测试生成 | 正向、边界、类型、鉴权场景 |
+| 多 Reviewer 评审 | 参数、权限、业务、数据、安全幂等 |
+| 风险场景补充 | 业务异常、越权、流程、幂等、并发 |
+| JSON 修复校验 | json-repair + schema 校验 |
+| pytest 代码生成 | fixture、配置、客户端封装 |
+| Postman Collection | 可直接导入执行 |
+| HTML 报告 | 零依赖 XTestRunner 风格 |
+| 多平台分发 | Claude Code、Cursor、Codex Agents |
 
 ## 快速开始
 
@@ -79,25 +205,21 @@ your-project/
 └── .gitignore
 ```
 
-### 配置目标项目
+### 使用 Skill
 
-编辑：
+先编辑目标项目中的配置：
 
 ```text
 .api-testcase-assets/project.config.md
 ```
 
-填写项目名称、API 基础地址、认证方式、测试负责人和业务域。配置中如果仍有 `[填写...]` 占位符，生成流程会阻断，避免在缺少上下文时生成低质量用例。
+填写项目名称、API 基础地址、认证方式、测试负责人和业务域。配置中如果仍有 `[填写...]` 占位符，生成流程会阻断。
 
-### 使用 Skill
-
-在支持的 Agent 工具中执行：
+生成测试用例和代码：
 
 ```text
 /api-testcase-creator
 ```
-
-按提示提供 OpenAPI / Swagger / Postman 文件，确认解析结果后生成用例和代码。
 
 运行已生成测试：
 
@@ -105,7 +227,90 @@ your-project/
 /api-testcase-runner
 ```
 
-## 生成流程
+## 多 Reviewer 评审机制
+
+评审阶段采用轻量专家组模式。
+
+每个 Reviewer 聚焦单一领域：
+
+| Reviewer | 关注点 |
+|----------|--------|
+| 参数 Reviewer | required、type、enum、boundary |
+| 权限 Reviewer | Token、越权、多角色 |
+| 业务 Reviewer | 业务规则、状态流转 |
+| 数据 Reviewer | 响应结构、断言、分页 |
+| 安全幂等 Reviewer | 注入、重复提交、并发 |
+
+最终由主 Reviewer：
+
+- 去重
+- 合并
+- 排序
+- 过滤明显不适用建议
+- 输出评审决策
+
+上下文控制规则：
+
+- 接口数超过 10 时按 tag/module 分批评审。
+- 每个 reviewer 最多输出 5 条发现、5 条建议用例、3 条不适用项。
+- 用户可以全部接受、部分接受、跳过，或补充关注点后再评一轮。
+
+## 示例
+
+输入：
+
+```yaml
+POST /orders
+
+product_id:
+  type: string
+  required: true
+
+quantity:
+  type: integer
+  minimum: 1
+```
+
+基础生成：
+
+```text
+✓ 正向创建订单
+✓ product_id 缺失
+✓ quantity 类型错误
+✓ quantity < 1
+✓ 无 Token
+✓ 伪造 Token
+```
+
+评审补充：
+
+```text
+✓ 重复提交订单
+✓ 库存不足
+✓ 已下架商品
+✓ 越权访问他人订单
+✓ 并发创建订单
+```
+
+## 输出结果
+
+### 测试用例表
+
+结构化测试设计文档，适合评审、沉淀和二次修改。
+
+### pytest 自动化代码
+
+生成可执行测试代码、配置文件、API 客户端和 pytest fixture。
+
+### Postman Collection
+
+可直接导入 Postman 执行，包含基础断言脚本。
+
+### HTML 测试报告
+
+内置 XTestRunner 风格报告生成器，零依赖。
+
+## 工作流
 
 ### `/api-testcase-creator`
 
@@ -114,7 +319,7 @@ your-project/
 | Stage 0 | 初始化检查，读取项目配置和检查点库 | 配置校验结果 |
 | Stage 1 | 解析接口文档 | `0-接口解析.md`、接口摘要 |
 | Stage 2 | 程序基础用例 + LLM 业务场景补充 | `1-用例准备.md` |
-| Stage 3 | 多角色 reviewer 评审与主审汇总 | `1-评审报告.md`、`1-评审决策.md` |
+| Stage 3 | 多 Reviewer 风险评审与主审汇总 | `1-评审报告.md`、`1-评审决策.md` |
 | Stage 4 | JSON 修复校验并生成 pytest 代码 | `export_data.json`、`code/tests/` |
 | Stage 5 | 验证代码并选择部署/运行/导出 | 校验结果、可选运行报告 |
 
@@ -127,27 +332,6 @@ your-project/
 | Stage 3 | 冒烟、完整或干跑模式运行 pytest |
 | Stage 4 | 输出通过率、失败列表和报告路径 |
 | Stage 5 | 失败分析与修复建议 |
-
-## 多角色评审
-
-评审阶段采用轻量多 reviewer 模式，不做复杂平台化。
-
-默认 reviewer：
-
-| Reviewer | 关注点 |
-|----------|--------|
-| 参数边界 reviewer | 必填、类型、边界、枚举、pattern |
-| 鉴权权限 reviewer | 无 Token、伪造 Token、越权、多角色 |
-| 业务流程 reviewer | 业务规则、状态流转、跨接口链路 |
-| 数据断言 reviewer | 响应字段、错误结构、分页、数据一致性 |
-| 安全幂等 reviewer | 注入、敏感信息、重复提交、并发 |
-
-上下文控制规则：
-
-- 接口数超过 10 时按 tag/module 分批评审。
-- 每个 reviewer 最多输出 5 条发现、5 条建议用例、3 条不适用项。
-- 主 agent 会去重、合并、删除明显不适用建议，并按优先级汇总。
-- 用户可以全部接受、部分接受、跳过，或补充关注点后再评一轮。
 
 ## JSON 修复与校验
 
@@ -276,45 +460,6 @@ api-testcase-creator/
 
 Postman Collection 通常缺少完整 schema，因此从 Postman 生成的参数类型和 required 信息会弱于 OpenAPI / Swagger。
 
-## 生成用例范围
-
-程序自动生成：
-
-- 正向调用
-- 必填参数缺失
-- 参数类型错误
-- 数值边界值
-- 字符串长度边界值
-- 枚举非法值
-- 无 Token / 伪造 Token
-
-LLM 评审和补充：
-
-- 业务规则反向用例
-- 状态流转场景
-- 跨接口链路
-- 越权访问
-- 响应字段断言
-- 幂等和并发风险
-- 安全风险场景
-
-## 报告
-
-内置 HTML 报告为 XTestRunner 样式，零依赖生成，包含：
-
-- 通过、失败、错误、跳过统计
-- 通过率和耗时
-- 用例明细
-- 失败详情展开
-- 状态筛选
-- 响应式布局
-
-同时生成：
-
-- Markdown 运行摘要
-- JUnit XML
-- 原始 pytest 输出日志
-
 ## 开发
 
 初始化：
@@ -363,6 +508,23 @@ uv run pytest tests -q
 - PyYAML
 
 HTML 报告使用内置生成器，不依赖 XTestRunner 或 pytest-html。
+
+## 项目定位
+
+API TestCase Creator 不是测试平台。
+
+它是一个：
+
+**可部署到项目内部的 AI 测试设计 Skill。**
+
+通过：
+
+- 程序化规则生成
+- 项目知识库
+- 多 Reviewer 风险评审
+- 人工确认决策
+
+帮助团队构建更加稳定、可复用的 API 测试设计流程。
 
 ## License
 
